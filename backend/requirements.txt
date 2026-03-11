@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+gunicorn
+pandas
+psycopg2-binary
+langchain
+langchain-openai
+python-dotenv
