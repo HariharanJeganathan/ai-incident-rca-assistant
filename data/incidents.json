@@ -1,0 +1,20 @@
+[
+  {
+    "incident_id": "INC001",
+    "title": "Payment API outage",
+    "service": "payment-service",
+    "error_logs": "Database connection timeout",
+    "timeline": "10:02 AM latency spike detected",
+    "root_cause": "Database connection pool exhaustion",
+    "resolution": "Restarted DB instance and increased connection pool size"
+  },
+  {
+    "incident_id": "INC002",
+    "title": "Login service failure",
+    "service": "auth-service",
+    "error_logs": "Redis connection refused",
+    "timeline": "09:14 AM authentication errors",
+    "root_cause": "Redis cache server crashed due to memory overflow",
+    "resolution": "Restarted Redis instance and increased memory allocation"
+  }
+]
