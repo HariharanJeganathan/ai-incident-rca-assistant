@@ -7,23 +7,28 @@ class RCAGenerator:
 
     def __init__(self):
 
-        # Azure OpenAI LLM configuration
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        key = os.getenv("AZURE_OPENAI_API_KEY")
+        version = os.getenv("AZURE_OPENAI_API_VERSION")
+        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+
+        if not endpoint or not key or not version or not deployment:
+            raise ValueError("Azure OpenAI environment variables are missing.")
+
         self.llm = AzureChatOpenAI(
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
-            temperature=0.2
+            azure_endpoint=endpoint,
+            api_key=key,
+            api_version=version,
+            deployment_name=deployment,
+            max_tokens=1200
         )
 
-        # RCA Prompt Template
         self.prompt = PromptTemplate(
             input_variables=["incident", "similar_incidents"],
             template="""
-You are an expert Site Reliability Engineer.
+You are a senior Site Reliability Engineer performing a Root Cause Analysis.
 
-Analyze the new incident and similar past incidents to generate
-a professional Root Cause Analysis report.
+Analyze the incident data and similar past incidents.
 
 New Incident:
 {incident}
@@ -31,23 +36,23 @@ New Incident:
 Similar Past Incidents:
 {similar_incidents}
 
-Generate structured RCA with the following sections:
+Generate a professional RCA report with the following sections:
 
-Problem Summary
-Root Cause
-Contributing Factors
-Immediate Fix
-Corrective Actions
-Preventive Actions
-Impact Summary
-
-Also classify the incident impact:
+1. Problem Summary
+2. Root Cause
+3. Contributing Factors
+4. Immediate Fix
+5. Corrective Actions
+6. Preventive Actions
+7. Impact Summary
 
 Impact Classification:
-- Severity: Low / Medium / High / Critical
-- Regions impacted
-- Services impacted
-- Estimated users affected
+- Severity Level: Low / Medium / High / Critical
+- Regions Impacted
+- Services Impacted
+- Estimated Users Affected
+
+Write clearly and professionally as if submitting to incident management leadership.
 """
         )
 
