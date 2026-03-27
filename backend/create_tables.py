@@ -1,9 +1,10 @@
-from app.db import get_connection
+from backend.app.db import get_connection
 
 conn = get_connection()
 cursor = conn.cursor()
 
-cursor.execute("""
+cursor.execute(
+    """
 CREATE TABLE IF NOT EXISTS incident_rca (
     id SERIAL PRIMARY KEY,
     incident_file TEXT,
@@ -11,10 +12,10 @@ CREATE TABLE IF NOT EXISTS incident_rca (
     impact_level TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-""")
+"""
+)
 
 conn.commit()
-
 cursor.close()
 conn.close()
 

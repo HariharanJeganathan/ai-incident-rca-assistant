@@ -73,4 +73,5 @@ jobs:
         with:
           app-name: 'rca-engine'
           slot-name: 'Production'
+          startup-command: 'gunicorn -k uvicorn.workers.UvicornWorker backend.app.main:app --bind=0.0.0.0 --timeout 600'
           
