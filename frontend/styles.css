@@ -1,0 +1,90 @@
+:root {
+  --bg: #0b1221;
+  --card: #121a2d;
+  --text: #ecf2ff;
+  --muted: #a8b6d6;
+  --accent: #6da8ff;
+  --accent2: #7ef0d2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: Inter, Segoe UI, system-ui, -apple-system, sans-serif;
+  background: radial-gradient(ellipse at top, #14213f, var(--bg));
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  background: #0b1221cc;
+  border-bottom: 1px solid #273557;
+}
+.topbar h1 { margin: 0; font-size: 1.2rem; }
+.pill {
+  border: 1px solid #3b4f80;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+.card {
+  background: linear-gradient(180deg, #131c32, #0f1729);
+  border: 1px solid #2f3f65;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 8px 30px #00000045;
+}
+button {
+  margin-top: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #0b1221;
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+textarea, input[type="file"] {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #374976;
+  background: #0d1425;
+  color: var(--text);
+  padding: 10px;
+}
+.output {
+  white-space: pre-wrap;
+  max-height: 240px;
+  overflow: auto;
+  background: #0a1120;
+  border: 1px solid #2f3f65;
+  border-radius: 8px;
+  padding: 10px;
+  color: #d9e7ff;
+}
+.list { padding-left: 18px; color: var(--muted); }
+.chat-card { grid-column: 1 / -1; }
+.chat-box {
+  min-height: 180px;
+  max-height: 320px;
+  overflow: auto;
+  background: #0a1120;
+  border: 1px solid #2f3f65;
+  border-radius: 8px;
+  padding: 10px;
+}
+.msg { margin: 8px 0; }
+.user { color: var(--accent2); }
+.bot { color: #d9e7ff; }

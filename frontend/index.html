@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Incident RCA Assistant</title>
+    <link rel="stylesheet" href="/frontend/styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <h1>AI Incident RCA Assistant</h1>
+      <span id="apiStatus" class="pill">Checking API…</span>
+    </header>
+
+    <main class="layout">
+      <section class="card">
+        <h2>Upload Incident Excel</h2>
+        <input id="excelFile" type="file" accept=".xlsx,.xls" />
+        <button id="uploadBtn">Generate RCA</button>
+        <pre id="rcaOutput" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Impact Classification</h2>
+        <button id="impactBtn">Classify Impact</button>
+        <pre id="impactOutput" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Past Incidents</h2>
+        <button id="refreshPastBtn">Refresh</button>
+        <ul id="pastIncidents" class="list"></ul>
+      </section>
+
+      <section class="card chat-card">
+        <h2>Chatbot Workspace</h2>
+        <div id="chatMessages" class="chat-box"></div>
+        <textarea id="chatInput" rows="3" placeholder="Ask follow-up questions about the RCA..."></textarea>
+        <button id="chatBtn">Send</button>
+      </section>
+    </main>
+
+    <script src="/frontend/app.js"></script>
+  </body>
+</html>
