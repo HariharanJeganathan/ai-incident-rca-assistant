@@ -1,12 +1,20 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from .api.routes import router
 
 load_dotenv()
 
 app = FastAPI(title="AI Incident RCA Assistant")
+
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse("frontend/index.html")
 
 app.add_middleware(
     CORSMiddleware,
