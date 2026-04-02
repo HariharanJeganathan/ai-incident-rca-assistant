@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="/frontend/styles.css" />
   </head>
   <body>
-    <div class="bg"></div>
     <header class="topbar">
       <h1>AI Incident RCA Assistant</h1>
+      <nav>
+        <a href="/" class="nav-link active">Dashboard</a>
+        <a href="/frontend/incidents.html" class="nav-link">Incident Viewer</a>
+      </nav>
       <span id="apiStatus" class="pill">Checking API…</span>
     </header>
 
     <main class="layout">
-      <section class="card">
+      <section class="card wide-card">
         <h2>Upload Incident Excel</h2>
         <input id="excelFile" type="file" accept=".xlsx,.xls" />
         <button id="uploadBtn">Generate RCA</button>
-        <pre id="rcaOutput" class="output"></pre>
+        <pre id="rcaOutput" class="output rca-output"></pre>
       </section>
 
       <section class="card">
@@ -34,7 +37,8 @@
       </section>
 
       <section class="card chat-card">
-        <h2>Chatbot Workspace</h2>
+        <h2>Glow Chatbot Workspace</h2>
+        <p class="hint">Glow gives structured answers with headings, bullets and clear formatting.</p>
         <div id="chatMessages" class="chat-box"></div>
         <textarea id="chatInput" rows="3" placeholder="Ask follow-up questions about the RCA..."></textarea>
         <button id="chatBtn">Send</button>

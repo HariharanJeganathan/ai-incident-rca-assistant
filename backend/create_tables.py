@@ -15,8 +15,20 @@ CREATE TABLE IF NOT EXISTS incident_rca (
 """
 )
 
+cursor.execute(
+    """
+CREATE TABLE IF NOT EXISTS incident_chat (
+    id SERIAL PRIMARY KEY,
+    incident_id INTEGER NOT NULL REFERENCES incident_rca(id) ON DELETE CASCADE,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+)
+
 conn.commit()
 cursor.close()
 conn.close()
 
-print("Table created successfully")
+print("Tables created successfully")

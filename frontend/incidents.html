@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incident Viewer - AI RCA Assistant</title>
+    <link rel="stylesheet" href="/frontend/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Incident Viewer</h1>
+      <nav>
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/frontend/incidents.html" class="nav-link active">Incident Viewer</a>
+      </nav>
+      <span id="apiStatus" class="pill">Checking API…</span>
+    </header>
+
+    <main class="layout">
+      <section class="card">
+        <h2>Past Incidents</h2>
+        <button id="refreshIncidentsBtn">Refresh</button>
+        <ul id="incidentList" class="list"></ul>
+      </section>
+
+      <section class="card wide-card">
+        <h2 id="incidentTitle">Select an incident</h2>
+        <h3>RCA</h3>
+        <pre id="incidentRca" class="output rca-output"></pre>
+        <h3>Glow Conversation History</h3>
+        <div id="incidentChatHistory" class="chat-box"></div>
+      </section>
+    </main>
+
+    <script src="/frontend/incidents.js"></script>
+  </body>
+</html>

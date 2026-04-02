@@ -17,7 +17,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
+  gap: 12px;
+  padding: 16px 24px;
   position: sticky;
   top: 0;
   backdrop-filter: blur(10px);
@@ -25,6 +26,16 @@ body {
   border-bottom: 1px solid #273557;
 }
 .topbar h1 { margin: 0; font-size: 1.2rem; }
+nav { display: flex; gap: 10px; }
+.nav-link {
+  color: #dce8ff;
+  text-decoration: none;
+  border: 1px solid #3b4f80;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+.nav-link.active { background: #1b2a4f; }
 .pill {
   border: 1px solid #3b4f80;
   border-radius: 999px;
@@ -34,7 +45,7 @@ body {
 }
 .layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
   padding: 20px;
 }
@@ -45,6 +56,7 @@ body {
   padding: 14px;
   box-shadow: 0 8px 30px #00000045;
 }
+.wide-card { grid-column: span 2; }
 button {
   margin-top: 10px;
   border: 0;
@@ -55,6 +67,13 @@ button {
   padding: 10px 12px;
   cursor: pointer;
 }
+.list-btn {
+  width: 100%;
+  text-align: left;
+  background: #172542;
+  color: #dce8ff;
+  margin: 5px 0;
+}
 textarea, input[type="file"] {
   width: 100%;
   margin-top: 8px;
@@ -64,27 +83,39 @@ textarea, input[type="file"] {
   color: var(--text);
   padding: 10px;
 }
+.hint { color: var(--muted); font-size: 0.85rem; }
 .output {
   white-space: pre-wrap;
-  max-height: 240px;
+  line-height: 1.5;
+  max-height: 280px;
   overflow: auto;
   background: #0a1120;
   border: 1px solid #2f3f65;
   border-radius: 8px;
-  padding: 10px;
+  padding: 12px;
   color: #d9e7ff;
 }
-.list { padding-left: 18px; color: var(--muted); }
+.rca-output {
+  min-height: 360px;
+  max-height: 70vh;
+  font-size: 0.95rem;
+}
+.list { padding-left: 0; list-style: none; color: var(--muted); }
 .chat-card { grid-column: 1 / -1; }
 .chat-box {
-  min-height: 180px;
-  max-height: 320px;
+  min-height: 220px;
+  max-height: 420px;
   overflow: auto;
   background: #0a1120;
   border: 1px solid #2f3f65;
   border-radius: 8px;
   padding: 10px;
 }
-.msg { margin: 8px 0; }
-.user { color: var(--accent2); }
-.bot { color: #d9e7ff; }
+.msg {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+}
+.msg p { margin: 4px 0; }
+.user { background: #113126; color: #9df7d7; }
+.bot { background: #162746; color: #d9e7ff; }
