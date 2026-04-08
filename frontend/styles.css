@@ -99,7 +99,17 @@ textarea, input[type="file"] {
   min-height: 360px;
   max-height: 70vh;
   font-size: 0.95rem;
+  white-space: normal;
 }
+.rca-output h1, .rca-output h2, .rca-output h3 {
+  color: var(--accent);
+  margin: 12px 0 6px;
+}
+.rca-output p { margin: 4px 0; }
+.rca-output ul, .rca-output ol { padding-left: 20px; margin: 4px 0; }
+.rca-output hr { border-color: #2f3f65; margin: 10px 0; }
+.rca-output strong { color: var(--accent2); }
+.rca-output code { background: #0a1120; border-radius: 4px; padding: 2px 5px; font-size: 0.88em; }
 .list { padding-left: 0; list-style: none; color: var(--muted); }
 .chat-card { grid-column: 1 / -1; }
 .chat-box {

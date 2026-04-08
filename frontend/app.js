@@ -5,17 +5,13 @@ const apiStatus = document.getElementById('apiStatus');
 let rcaContext = '';
 let currentIncidentId = null;
 
-const renderStructured = (text) => {
-  const wrapper = document.createElement('div');
-  const lines = text.split('\n').filter(Boolean);
-
-  lines.forEach((line) => {
-    const p = document.createElement('p');
-    p.textContent = line.replace(/^[-*]\s*/, '• ');
-    wrapper.appendChild(p);
-  });
-
-  return wrapper;
+// FastAPI returns text/plain on unhandled 500s, not JSON.
+// This helper normalises both into a plain object so callers
+// always get { detail } on errors instead of a SyntaxError.
+const parseResponse = async (res) => {
+  const ct = res.headers.get('content-type') || '';
+  if (ct.includes('application/json')) return res.json();
+  return { detail: await res.text() };
 };
 
 const addMessage = (type, text) => {
@@ -25,7 +21,7 @@ const addMessage = (type, text) => {
   if (type === 'user') {
     div.textContent = `You: ${text}`;
   } else {
-    div.appendChild(renderStructured(`Glow:\n${text}`));
+    div.innerHTML = marked.parse(`**Glow:** ${text}`);
   }
 
   chatMessages.appendChild(div);
@@ -43,24 +39,31 @@ const checkHealth = async () => {
 };
 
 const loadIncidentDetails = async (incidentId) => {
-  const res = await fetch(`/incident/${incidentId}`);
-  const data = await res.json();
-  if (!res.ok) return;
+  try {
+    const res = await fetch(`/incident/${incidentId}`);
+    const data = await parseResponse(res);
+    if (!res.ok) {
+      rcaOutput.textContent = data.detail || 'Failed to load incident';
+      return;
+    }
 
-  currentIncidentId = data.id;
-  rcaContext = data.rca_report || '';
-  rcaOutput.textContent = rcaContext;
+    currentIncidentId = data.id;
+    rcaContext = data.rca_report || '';
+    rcaOutput.innerHTML = marked.parse(rcaContext);
 
-  chatMessages.innerHTML = '';
-  if (!data.chat_history.length) {
-    addMessage('bot', 'No prior chat history found for this incident yet.');
-    return;
+    chatMessages.innerHTML = '';
+    if (!data.chat_history.length) {
+      addMessage('bot', 'No prior chat history found for this incident yet.');
+      return;
+    }
+
+    data.chat_history.forEach((item) => {
+      addMessage('user', item.question);
+      addMessage('bot', item.answer);
+    });
+  } catch (err) {
+    rcaOutput.textContent = `Error loading incident: ${err.message}`;
   }
-
-  data.chat_history.forEach((item) => {
-    addMessage('user', item.question);
-    addMessage('bot', item.answer);
-  });
 };
 
 checkHealth();
@@ -73,47 +76,62 @@ document.getElementById('uploadBtn').onclick = async () => {
   formData.append('file', file);
   rcaOutput.textContent = 'Generating RCA...';
 
-  const res = await fetch('/upload-excel', { method: 'POST', body: formData });
-  const data = await res.json();
-  if (!res.ok) return (rcaOutput.textContent = data.detail || 'Upload failed');
+  try {
+    const res = await fetch('/upload-excel', { method: 'POST', body: formData });
+    const data = await parseResponse(res);
+    if (!res.ok) {
+      rcaOutput.textContent = data.detail || 'Upload failed';
+      return;
+    }
 
-  currentIncidentId = data.incident_id;
-  rcaContext = data.rca_report;
-  rcaOutput.textContent = rcaContext;
-  chatMessages.innerHTML = '';
-  addMessage('bot', 'RCA generated successfully. Ask me anything about this incident.');
+    currentIncidentId = data.incident_id;
+    rcaContext = data.rca_report;
+    rcaOutput.innerHTML = marked.parse(rcaContext);
+    chatMessages.innerHTML = '';
+    addMessage('bot', 'RCA generated successfully. Ask me anything about this incident.');
+  } catch (err) {
+    rcaOutput.textContent = `Upload error: ${err.message}`;
+  }
 };
 
 document.getElementById('impactBtn').onclick = async () => {
   if (!rcaContext) return alert('Please generate RCA first');
 
   impactOutput.textContent = 'Classifying impact...';
-  const res = await fetch('/impact-classification', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rca_context: rcaContext }),
-  });
-  const data = await res.json();
-  impactOutput.textContent = res.ok ? data.impact : data.detail || 'Failed';
+  try {
+    const res = await fetch('/impact-classification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rca_context: rcaContext }),
+    });
+    const data = await parseResponse(res);
+    impactOutput.textContent = res.ok ? data.impact : data.detail || 'Failed';
+  } catch (err) {
+    impactOutput.textContent = `Error: ${err.message}`;
+  }
 };
 
 document.getElementById('refreshPastBtn').onclick = async () => {
   const ul = document.getElementById('pastIncidents');
   ul.innerHTML = '';
 
-  const res = await fetch('/past-incidents');
-  const data = await res.json();
-  if (!res.ok) return;
+  try {
+    const res = await fetch('/past-incidents');
+    const data = await parseResponse(res);
+    if (!res.ok) return;
 
-  data.forEach((i) => {
-    const li = document.createElement('li');
-    const btn = document.createElement('button');
-    btn.textContent = `${i.incident_file} (${i.created_at})`;
-    btn.className = 'list-btn';
-    btn.onclick = () => loadIncidentDetails(i.id);
-    li.appendChild(btn);
-    ul.appendChild(li);
-  });
+    data.forEach((i) => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.textContent = `${i.incident_file} (${i.created_at})`;
+      btn.className = 'list-btn';
+      btn.onclick = () => loadIncidentDetails(i.id);
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+  } catch (err) {
+    ul.innerHTML = `<li style="color:#f87171">Error: ${err.message}</li>`;
+  }
 };
 
 document.getElementById('chatBtn').onclick = async () => {
@@ -124,11 +142,15 @@ document.getElementById('chatBtn').onclick = async () => {
   addMessage('user', question);
   document.getElementById('chatInput').value = '';
 
-  const res = await fetch('/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question, rca_context: rcaContext, incident_id: currentIncidentId }),
-  });
-  const data = await res.json();
-  addMessage('bot', res.ok ? data.answer : data.detail || 'Failed');
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, rca_context: rcaContext, incident_id: currentIncidentId }),
+    });
+    const data = await parseResponse(res);
+    addMessage('bot', res.ok ? data.answer : data.detail || 'Request failed');
+  } catch (err) {
+    addMessage('bot', `Error reaching Glow: ${err.message}`);
+  }
 };

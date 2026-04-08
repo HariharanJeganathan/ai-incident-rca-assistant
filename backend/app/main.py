@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .api.routes import router
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 app = FastAPI(title="AI Incident RCA Assistant")
 

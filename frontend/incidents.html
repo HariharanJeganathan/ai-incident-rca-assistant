@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Incident Viewer - AI RCA Assistant</title>
     <link rel="stylesheet" href="/frontend/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
     <header class="topbar">
@@ -26,7 +27,7 @@
       <section class="card wide-card">
         <h2 id="incidentTitle">Select an incident</h2>
         <h3>RCA</h3>
-        <pre id="incidentRca" class="output rca-output"></pre>
+        <div id="incidentRca" class="output rca-output"></div>
         <h3>Glow Conversation History</h3>
         <div id="incidentChatHistory" class="chat-box"></div>
       </section>

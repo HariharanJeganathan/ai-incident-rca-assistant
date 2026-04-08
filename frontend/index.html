@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Incident RCA Assistant</title>
     <link rel="stylesheet" href="/frontend/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
     <header class="topbar">
@@ -21,7 +22,7 @@
         <h2>Upload Incident Excel</h2>
         <input id="excelFile" type="file" accept=".xlsx,.xls" />
         <button id="uploadBtn">Generate RCA</button>
-        <pre id="rcaOutput" class="output rca-output"></pre>
+        <div id="rcaOutput" class="output rca-output"></div>
       </section>
 
       <section class="card">
