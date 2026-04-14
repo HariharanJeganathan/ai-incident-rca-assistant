@@ -1,6 +1,6 @@
+# backend/app/db.py
 import os
-
-import psycopg2
+import psycopg
 
 
 def get_connection():
@@ -10,6 +10,9 @@ def get_connection():
     password = os.getenv("POSTGRES_PASSWORD")
     port = int(os.getenv("POSTGRES_PORT", "5432"))
     sslmode = os.getenv("POSTGRES_SSLMODE", "require")
+
+    # psycopg3 does not accept "user@servername" format — strip the suffix
+    user = (user or "").split("@")[0]
 
     missing = [
         name
@@ -25,9 +28,9 @@ def get_connection():
             f"PostgreSQL environment variables are missing: {', '.join(missing)}"
         )
 
-    return psycopg2.connect(
+    return psycopg.connect(
         host=host,
-        database=database,
+        dbname=database,
         user=user,
         password=password,
         port=port,
