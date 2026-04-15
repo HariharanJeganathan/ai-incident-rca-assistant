@@ -69,6 +69,15 @@ def create_tables():
         """)
         print("✅ Created table: incident_chat")
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS mir_stakeholders (
+                id SERIAL PRIMARY KEY,
+                config_json TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        print("✅ Created table: mir_stakeholders")
+
         conn.commit()
         cursor.close()
         conn.close()

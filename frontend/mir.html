@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIR Assistant - AI RCA</title>
+    <link rel="stylesheet" href="/frontend/styles.css" />
+    <link rel="stylesheet" href="/frontend/mir.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>MIR Assistant</h1>
+      <nav>
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/frontend/incidents.html" class="nav-link">Incident Viewer</a>
+        <a href="/mir" class="nav-link active">MIR Assistant</a>
+      </nav>
+      <span id="apiStatus" class="pill">Checking API…</span>
+    </header>
+
+    <main class="mir-layout">
+
+      <!-- ── LEFT COLUMN: INPUT FORMS ──────────────────────────────────────── -->
+      <div class="mir-left">
+
+        <!-- SECTION 1: MIR DOCUMENT UPLOAD -->
+        <section class="card">
+          <h2>1. Upload MIR Document <span class="optional">(optional)</span></h2>
+          <p class="hint">Upload an existing .docx to pre-fill fields below.</p>
+          <input id="mirDocFile" type="file" accept=".docx" />
+          <button id="parseMirBtn">Parse Document</button>
+          <div id="parseStatus" class="hint" style="margin-top:6px"></div>
+        </section>
+
+        <!-- SECTION 2: INCIDENT DETAILS -->
+        <section class="card">
+          <h2>2. Incident Details</h2>
+          <div class="form-grid">
+            <label>INC Number *
+              <input id="incNumber" type="text" placeholder="INC034514236" />
+            </label>
+            <label>PRB Number *
+              <input id="prbNumber" type="text" placeholder="PRB0090428" />
+            </label>
+            <label>Configuration Item
+              <input id="ci" type="text" placeholder="TUNL Application" />
+            </label>
+            <label class="checkbox-row">
+              <input id="isSco" type="checkbox" />
+              SCO-related PRB (adds SCO DL to CC)
+            </label>
+          </div>
+          <label>Incident Title *
+            <input id="incTitle" type="text" placeholder="LAS datacenter performance issues for TUNL application" />
+          </label>
+          <label>Description *
+            <textarea id="incDescription" rows="3" placeholder="What happened and where..."></textarea>
+          </label>
+          <label>Resolution *
+            <textarea id="incResolution" rows="2" placeholder="What was done to restore service..."></textarea>
+          </label>
+          <label>Business Impact
+            <textarea id="incBizImpact" rows="2" placeholder="Customer / business effect..."></textarea>
+          </label>
+          <div class="form-grid">
+            <label>Incident Opened
+              <input id="incOpened" type="text" placeholder="2026-04-14 09:30 CT" />
+            </label>
+            <label>Incident Resolved
+              <input id="incResolved" type="text" placeholder="2026-04-14 13:52 CT" />
+            </label>
+            <label>Duration Degraded
+              <input id="incDuration" type="text" placeholder="4 Hour 22 Minutes" />
+            </label>
+          </div>
+        </section>
+
+        <!-- SECTION 3: WHITEBOARD UPLOAD -->
+        <section class="card">
+          <h2>3. Upload Whiteboard Excel</h2>
+          <p class="hint">Extracts Key Participants for TO list.</p>
+          <input id="whiteboardFile" type="file" accept=".xlsx,.xls" />
+          <button id="parseExcelBtn">Extract Attendees</button>
+          <div id="attendeePreview" class="attendee-list"></div>
+        </section>
+
+        <!-- SECTION 4: GENERATE -->
+        <section class="card">
+          <button id="generateBtn" class="generate-btn">Generate MIR Draft</button>
+          <div id="generateStatus" class="hint" style="margin-top:8px"></div>
+        </section>
+
+      </div>
+
+      <!-- ── RIGHT COLUMN: OUTPUT ───────────────────────────────────────────── -->
+      <div class="mir-right" id="mirOutput" style="display:none">
+
+        <!-- IMPACT HEADING -->
+        <section class="card output-card">
+          <div class="output-header">
+            <h2>Impact Heading</h2>
+            <button class="copy-btn" data-target="headingOut">Copy</button>
+          </div>
+          <div id="headingOut" class="heading-display"></div>
+        </section>
+
+        <!-- QUESTIONS -->
+        <section class="card output-card">
+          <div class="output-header">
+            <h2>MIR Questions (Q1–Q10)</h2>
+            <button class="copy-btn" data-target="questionsOut">Copy</button>
+          </div>
+          <ol id="questionsOut" class="questions-list"></ol>
+        </section>
+
+        <!-- MEETING PREP -->
+        <section class="card output-card">
+          <div class="output-header">
+            <h2>Meeting Prep</h2>
+          </div>
+          <div class="meeting-fields">
+            <label>Subject
+              <input id="meetingSubject" type="text" readonly />
+            </label>
+            <label>TO (from Whiteboard)
+              <textarea id="meetingTo" rows="3" readonly></textarea>
+            </label>
+            <label>CC (Stakeholders)
+              <textarea id="meetingCc" rows="2" readonly></textarea>
+            </label>
+            <label>Email Body
+              <textarea id="meetingEmail" rows="8"></textarea>
+            </label>
+          </div>
+          <button class="copy-btn" data-target="meetingEmail" style="margin-top:6px">Copy Email Body</button>
+        </section>
+
+        <!-- DOWNLOAD -->
+        <section class="card output-card">
+          <div class="output-header">
+            <h2>Download MIR Document</h2>
+          </div>
+          <div class="form-grid">
+            <label>Root Cause Summary
+              <textarea id="rcaSummary" rows="3" placeholder="To be filled post-review..."></textarea>
+            </label>
+            <label>Corrective & Preventive Actions
+              <textarea id="capaText" rows="3" placeholder="CAPA items..."></textarea>
+            </label>
+          </div>
+          <button id="downloadBtn">Download .docx</button>
+        </section>
+
+      </div>
+
+    </main>
+
+    <!-- ── TIMELINE CHECKER (full width below) ───────────────────────────────── -->
+    <section class="card mir-timeline-section">
+      <h2>Timeline Checker</h2>
+      <p class="hint">Upload a screenshot of your INC timeline from ServiceNow. The AI will check it against MIR standards and flag any gaps over 30 minutes.</p>
+      <div class="timeline-upload-row">
+        <input id="timelineFile" type="file" accept="image/*" />
+        <button id="checkTimelineBtn">Check Timeline</button>
+      </div>
+      <div id="timelineResults" style="margin-top:12px"></div>
+    </section>
+
+    <!-- ── STAKEHOLDER SETTINGS ───────────────────────────────────────────────── -->
+    <section class="card mir-timeline-section">
+      <h2>Stakeholder Settings <span class="optional">(persisted)</span></h2>
+      <p class="hint">These CC addresses are automatically added to every MIR email. SCO DL is only added when "SCO-related PRB" is checked.</p>
+      <div class="stakeholder-form">
+        <label>Always CC (one per line)
+          <textarea id="ccAlways" rows="4" placeholder="bridge@fedex.com&#10;manager@fedex.com"></textarea>
+        </label>
+        <label>SCO Distribution List
+          <input id="scoDl" type="text" placeholder="sco-dl@fedex.com" />
+        </label>
+        <label>Non-SCO Additional CC (one per line)
+          <textarea id="nonScoCc" rows="3" placeholder="itsm-team@fedex.com"></textarea>
+        </label>
+      </div>
+      <button id="saveStakeholdersBtn">Save Stakeholders</button>
+      <span id="stakeholderStatus" class="hint" style="margin-left:10px"></span>
+    </section>
+
+    <script src="/frontend/mir.js"></script>
+  </body>
+</html>

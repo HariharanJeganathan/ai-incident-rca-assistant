@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .api.routes import router
+from .mir.routes import router as mir_router
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
@@ -35,3 +36,9 @@ def health_check() -> dict[str, str]:
 
 
 app.include_router(router)
+app.include_router(mir_router)
+
+
+@app.get("/mir")
+def mir_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "mir.html")
